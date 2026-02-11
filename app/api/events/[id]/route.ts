@@ -4,8 +4,9 @@ import { supabase, supabaseAdmin } from '@/lib/supabase';
 // PUT: Update event (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     // Verify admin authentication
     const adminToken = request.cookies.get('admin_token');
@@ -36,7 +37,7 @@ export async function PUT(
         date,
         image_url,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select();
 
     if (error) {
@@ -70,8 +71,9 @@ export async function PUT(
 // DELETE: Delete event (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     // Verify admin authentication
     const adminToken = request.cookies.get('admin_token');
@@ -85,7 +87,7 @@ export async function DELETE(
     const { error } = await supabaseAdmin
       .from('timeline_events')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('Supabase delete error:', error);
